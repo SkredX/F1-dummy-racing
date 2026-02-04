@@ -1,0 +1,13 @@
+{
+    "name": "f1-racing-server",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node --watch server.js"
+    },
+    "dependencies": {
+        "socket.io": "^4.7.4",
+        "express": "^4.18.2"
+    }
+}
