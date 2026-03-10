@@ -1,7 +1,8 @@
+/* ── Base ── */
 body {
     margin: 0;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     user-select: none;
 }
 
@@ -12,43 +13,154 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    z-index: 10;
+}
+
+/* ── Speed Cluster (bottom center) ── */
+#speed-cluster {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+#gear-indicator {
+    font-family: 'Orbitron', monospace;
+    font-size: 64px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255, 100, 0, 0.7), 2px 2px 6px rgba(0,0,0,0.9);
+    line-height: 1;
 }
 
 #speedometer {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    font-size: 48px;
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #e0e0e0;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+    letter-spacing: 2px;
 }
 
+/* ── Input Bars (bottom right) ── */
+#input-bars {
+    position: absolute;
+    bottom: 30px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 160px;
+}
+
+.input-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bar-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #aaa;
+    width: 30px;
+    text-align: right;
+    letter-spacing: 1px;
+}
+
+.bar-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+}
+
+.bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 5px;
+    transition: width 0.05s linear;
+}
+
+.throttle-fill {
+    background: linear-gradient(90deg, #00c853, #76ff03);
+    box-shadow: 0 0 8px rgba(118, 255, 3, 0.5);
+}
+
+.brake-fill {
+    background: linear-gradient(90deg, #ff1744, #ff5252);
+    box-shadow: 0 0 8px rgba(255, 23, 68, 0.5);
+}
+
+/* ── DRS Indicator ── */
+#drs-indicator {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #555;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 18px;
+    border-radius: 6px;
+    border: 2px solid #444;
+    letter-spacing: 3px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+#drs-indicator.active {
+    color: #00e676;
+    border-color: #00e676;
+    background: rgba(0, 230, 118, 0.15);
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+    text-shadow: 0 0 8px rgba(0, 230, 118, 0.8);
+}
+
+/* ── Lap Timer ── */
 #lap-timer {
     position: absolute;
     top: 20px;
     left: 20px;
-    font-size: 32px;
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
     color: #ffeb3b;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
+/* ── Leaderboard ── */
 #leaderboard {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.55);
     color: white;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
     width: 200px;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 #leaderboard h3 {
     margin: 0 0 10px 0;
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     padding-bottom: 5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
 }
 
 #leaderboard-list {
@@ -61,4 +173,214 @@ body {
     padding: 5px 0;
     display: flex;
     justify-content: space-between;
+    font-size: 13px;
+}
+
+/* ── Settings Gear Button ── */
+#settings-gear {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.45);
+    color: #ccc;
+    font-size: 22px;
+    cursor: pointer;
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    transition: all 0.2s ease;
+}
+
+#settings-gear:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: rotate(45deg);
+}
+
+/* ── Settings Overlay ── */
+#settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    backdrop-filter: blur(4px);
+}
+
+#settings-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.settings-panel {
+    background: rgba(20, 20, 30, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px 36px;
+    min-width: 380px;
+    max-width: 450px;
+    color: #e0e0e0;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+.settings-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.settings-close:hover {
+    color: #ff5252;
+}
+
+/* ── Presets ── */
+.settings-presets {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.preset-label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+}
+
+.preset-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #aaa;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.preset-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.preset-btn.active {
+    background: rgba(0, 150, 255, 0.2);
+    border-color: #0096ff;
+    color: #0096ff;
+}
+
+/* ── Key Binding Rows ── */
+.settings-bindings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.binding-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+
+.binding-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.binding-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ccc;
+}
+
+.key-btn {
+    min-width: 60px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 1px;
+}
+
+.key-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.key-btn.listening {
+    background: rgba(255, 165, 0, 0.2);
+    border-color: #ffa500;
+    color: #ffa500;
+    animation: pulse-key 0.8s ease infinite alternate;
+}
+
+@keyframes pulse-key {
+    from { box-shadow: 0 0 4px rgba(255, 165, 0, 0.3); }
+    to { box-shadow: 0 0 16px rgba(255, 165, 0, 0.6); }
+}
+
+/* ── Settings Footer ── */
+.settings-footer {
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-hint {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    font-style: italic;
 }
