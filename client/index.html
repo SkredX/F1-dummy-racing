@@ -6,12 +6,41 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>F1 2025 Multiplayer Racing</title>
+    <meta name="description" content="Realistic F1 multiplayer racing game with physics simulation on the Monza circuit" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
     <div id="ui-container">
-        <div id="speedometer">0 km/h</div>
+        <!-- Speedometer & Gear -->
+        <div id="speed-cluster">
+            <div id="gear-indicator">N</div>
+            <div id="speedometer">0 km/h</div>
+        </div>
+
+        <!-- Input Bars -->
+        <div id="input-bars">
+            <div class="input-bar-row">
+                <span class="bar-label">THR</span>
+                <div class="bar-track throttle-track">
+                    <div class="bar-fill throttle-fill" id="throttle-bar-fill"></div>
+                </div>
+            </div>
+            <div class="input-bar-row">
+                <span class="bar-label">BRK</span>
+                <div class="bar-track brake-track">
+                    <div class="bar-fill brake-fill" id="brake-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRS Indicator -->
+        <div id="drs-indicator">DRS</div>
+
+        <!-- Lap Info -->
         <div id="lap-timer">Time: 00:00.000</div>
         <div id="leaderboard">
             <h3>Live Timing</h3>
