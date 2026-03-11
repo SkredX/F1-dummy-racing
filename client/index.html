@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>F1 2025 Multiplayer Racing</title>
-    <meta name="description" content="Realistic F1 multiplayer racing game with physics simulation on the Monza circuit" />
+    <title>F1 2025 — Monza Grand Prix</title>
+    <meta name="description" content="Realistic F1 racing simulator on the Autodromo Nazionale Monza circuit with full physics" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,13 +15,34 @@
 
 <body>
     <div id="ui-container">
-        <!-- Speedometer & Gear -->
+
+        <!-- Top-left: Lap Info & Timer -->
+        <div id="timing-tower">
+            <div id="lap-count">LAP 1</div>
+            <div id="lap-timer">00:00.000</div>
+        </div>
+
+        <!-- Top-right: Mini-map -->
+        <div id="minimap-container">
+            <canvas id="minimap-canvas" width="200" height="200"></canvas>
+        </div>
+
+        <!-- Bottom center: Speed & Gear Cluster -->
         <div id="speed-cluster">
             <div id="gear-indicator">N</div>
             <div id="speedometer">0 km/h</div>
         </div>
 
-        <!-- Input Bars -->
+        <!-- RPM Bar (above speed cluster) -->
+        <div id="rpm-container">
+            <div id="rpm-bar-track">
+                <div id="rpm-bar-fill"></div>
+            </div>
+            <span id="rpm-text">0</span>
+            <span id="rpm-label">RPM</span>
+        </div>
+
+        <!-- Bottom-right: Input Bars -->
         <div id="input-bars">
             <div class="input-bar-row">
                 <span class="bar-label">THR</span>
@@ -40,12 +61,22 @@
         <!-- DRS Indicator -->
         <div id="drs-indicator">DRS</div>
 
-        <!-- Lap Info -->
-        <div id="lap-timer">Time: 00:00.000</div>
+        <!-- G-Force Display -->
+        <div id="g-force-container">
+            <div id="g-force-ring">
+                <div id="g-force-crosshair-h"></div>
+                <div id="g-force-crosshair-v"></div>
+                <div id="g-force-dot"></div>
+            </div>
+            <span id="g-force-text">0.0G</span>
+        </div>
+
+        <!-- Leaderboard (multiplayer) -->
         <div id="leaderboard">
             <h3>Live Timing</h3>
             <ul id="leaderboard-list"></ul>
         </div>
+
     </div>
     <script type="module" src="/src/main.js"></script>
 </body>

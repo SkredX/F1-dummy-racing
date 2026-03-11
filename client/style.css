@@ -1,9 +1,14 @@
+/* ══════════════════════════════════════════════
+   F1 Racing HUD — Premium Broadcast Style
+   ══════════════════════════════════════════════ */
+
 /* ── Base ── */
 body {
     margin: 0;
     overflow: hidden;
     font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     user-select: none;
+    background: #000;
 }
 
 #ui-container {
@@ -16,7 +21,166 @@ body {
     z-index: 10;
 }
 
-/* ── Speed Cluster (bottom center) ── */
+/* ══════════════════════════════════════════════
+   Timing Tower (Top Left)
+   ══════════════════════════════════════════════ */
+#timing-tower {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#lap-count {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(229, 0, 0, 0.85), rgba(180, 0, 0, 0.85));
+    padding: 6px 16px;
+    border-radius: 4px;
+    letter-spacing: 3px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 12px rgba(229, 0, 0, 0.3);
+}
+
+#lap-timer {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffeb3b;
+    background: rgba(0, 0, 0, 0.65);
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-shadow: 0 0 10px rgba(255, 235, 59, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 235, 59, 0.15);
+}
+
+/* ══════════════════════════════════════════════
+   Lap Stats (Top Left, below timer)
+   ══════════════════════════════════════════════ */
+#lap-stats {
+    position: absolute;
+    top: 95px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 6px;
+    padding: 10px 14px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    min-width: 180px;
+}
+
+.lap-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+}
+
+.lap-stat-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: #888;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.lap-stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e0e0e0;
+    letter-spacing: 1px;
+}
+
+.lap-stat-value.best-val {
+    color: #a855f7;
+    text-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
+.delta-green {
+    color: #00e676 !important;
+    text-shadow: 0 0 6px rgba(0, 230, 118, 0.5);
+}
+
+.delta-red {
+    color: #ff5252 !important;
+    text-shadow: 0 0 6px rgba(255, 82, 82, 0.5);
+}
+
+/* Sector badges */
+.sector-row {
+    display: flex;
+    gap: 6px;
+    padding: 5px 0 3px;
+    justify-content: center;
+}
+
+.sector-badge {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #666;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.sector-purple {
+    color: #a855f7 !important;
+    background: rgba(168, 85, 247, 0.15) !important;
+    border-color: rgba(168, 85, 247, 0.4) !important;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.sector-green {
+    color: #00e676 !important;
+    background: rgba(0, 230, 118, 0.12) !important;
+    border-color: rgba(0, 230, 118, 0.35) !important;
+}
+
+.sector-yellow {
+    color: #ffc107 !important;
+    background: rgba(255, 193, 7, 0.1) !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+/* ══════════════════════════════════════════════
+   Mini-map (Top Right)
+   ══════════════════════════════════════════════ */
+#minimap-container {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+#minimap-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ══════════════════════════════════════════════
+   Speed Cluster (Bottom Center)
+   ══════════════════════════════════════════════ */
 #speed-cluster {
     position: absolute;
     bottom: 24px;
@@ -33,7 +197,7 @@ body {
     font-size: 64px;
     font-weight: 900;
     color: #fff;
-    text-shadow: 0 0 20px rgba(255, 100, 0, 0.7), 2px 2px 6px rgba(0,0,0,0.9);
+    text-shadow: 0 0 25px rgba(255, 100, 0, 0.7), 0 0 50px rgba(255, 60, 0, 0.3), 2px 2px 6px rgba(0, 0, 0, 0.9);
     line-height: 1;
 }
 
@@ -46,7 +210,59 @@ body {
     letter-spacing: 2px;
 }
 
-/* ── Input Bars (bottom right) ── */
+/* ══════════════════════════════════════════════
+   RPM Bar (Above Speed Cluster)
+   ══════════════════════════════════════════════ */
+#rpm-container {
+    position: absolute;
+    bottom: 115px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 280px;
+}
+
+#rpm-bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#rpm-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #00c853, #c6ff00);
+    transition: width 0.05s linear;
+    box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+}
+
+#rpm-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ccc;
+    min-width: 45px;
+    text-align: right;
+}
+
+#rpm-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+/* ══════════════════════════════════════════════
+   Input Bars (Bottom Right)
+   ══════════════════════════════════════════════ */
 #input-bars {
     position: absolute;
     bottom: 30px;
@@ -76,10 +292,11 @@ body {
 .bar-track {
     flex: 1;
     height: 10px;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 5px;
     overflow: hidden;
     backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .bar-fill {
@@ -99,22 +316,24 @@ body {
     box-shadow: 0 0 8px rgba(255, 23, 68, 0.5);
 }
 
-/* ── DRS Indicator ── */
+/* ══════════════════════════════════════════════
+   DRS Indicator
+   ══════════════════════════════════════════════ */
 #drs-indicator {
     position: absolute;
     bottom: 100px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateX(160px);
     font-family: 'Orbitron', monospace;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #555;
     background: rgba(0, 0, 0, 0.4);
-    padding: 6px 18px;
-    border-radius: 6px;
+    padding: 5px 14px;
+    border-radius: 5px;
     border: 2px solid #444;
     letter-spacing: 3px;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     backdrop-filter: blur(4px);
 }
 
@@ -124,43 +343,110 @@ body {
     background: rgba(0, 230, 118, 0.15);
     box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
     text-shadow: 0 0 8px rgba(0, 230, 118, 0.8);
+    animation: drs-pulse 1s ease infinite alternate;
 }
 
-/* ── Lap Timer ── */
-#lap-timer {
+@keyframes drs-pulse {
+    from { box-shadow: 0 0 10px rgba(0, 230, 118, 0.2); }
+    to { box-shadow: 0 0 25px rgba(0, 230, 118, 0.5); }
+}
+
+/* ══════════════════════════════════════════════
+   G-Force Display (Bottom Left)
+   ══════════════════════════════════════════════ */
+#g-force-container {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    font-family: 'Orbitron', monospace;
-    font-size: 22px;
-    font-weight: 700;
-    color: #ffeb3b;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    bottom: 85px;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
 
-/* ── Leaderboard ── */
+#g-force-ring {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.35);
+    position: relative;
+    backdrop-filter: blur(4px);
+}
+
+#g-force-crosshair-h,
+#g-force-crosshair-v {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#g-force-crosshair-h {
+    width: 100%;
+    height: 1px;
+    top: 50%;
+    left: 0;
+}
+
+#g-force-crosshair-v {
+    width: 1px;
+    height: 100%;
+    left: 50%;
+    top: 0;
+}
+
+#g-force-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff5252;
+    box-shadow: 0 0 6px rgba(255, 82, 82, 0.6);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -3px;
+    margin-left: -3px;
+    transition: transform 0.08s ease-out;
+}
+
+#g-force-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+/* ══════════════════════════════════════════════
+   Leaderboard (Hidden when no multiplayer)
+   ══════════════════════════════════════════════ */
 #leaderboard {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 230px;
+    right: 16px;
     background: rgba(0, 0, 0, 0.55);
     color: white;
     padding: 12px;
     border-radius: 8px;
-    width: 200px;
+    width: 180px;
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: none; /* Hidden until multiplayer connects */
+}
+
+#leaderboard.has-players {
+    display: block;
 }
 
 #leaderboard h3 {
-    margin: 0 0 10px 0;
+    margin: 0 0 8px 0;
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 5px;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 12px;
     letter-spacing: 1px;
+    color: #aaa;
 }
 
 #leaderboard-list {
@@ -170,24 +456,26 @@ body {
 }
 
 #leaderboard-list li {
-    padding: 5px 0;
+    padding: 4px 0;
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: 12px;
 }
 
-/* ── Settings Gear Button ── */
+/* ══════════════════════════════════════════════
+   Settings Gear Button
+   ══════════════════════════════════════════════ */
 #settings-gear {
     position: absolute;
     bottom: 24px;
     left: 24px;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.45);
-    color: #ccc;
-    font-size: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.35);
+    color: #999;
+    font-size: 20px;
     cursor: pointer;
     pointer-events: all;
     display: flex;
@@ -198,20 +486,22 @@ body {
 }
 
 #settings-gear:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.25);
     transform: rotate(45deg);
 }
 
-/* ── Settings Overlay ── */
+/* ══════════════════════════════════════════════
+   Settings Overlay
+   ══════════════════════════════════════════════ */
 #settings-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,7 +509,7 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
 }
 
 #settings-overlay.visible {
@@ -228,28 +518,28 @@ body {
 }
 
 .settings-panel {
-    background: rgba(20, 20, 30, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 15, 25, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    padding: 32px 36px;
-    min-width: 380px;
-    max-width: 450px;
+    padding: 28px 32px;
+    min-width: 360px;
+    max-width: 420px;
     color: #e0e0e0;
     backdrop-filter: blur(20px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
 }
 
 .settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .settings-header h2 {
     margin: 0;
     font-family: 'Orbitron', monospace;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: #fff;
     letter-spacing: 2px;
@@ -258,8 +548,8 @@ body {
 .settings-close {
     background: none;
     border: none;
-    color: #888;
-    font-size: 28px;
+    color: #666;
+    font-size: 26px;
     cursor: pointer;
     padding: 0 4px;
     line-height: 1;
@@ -274,25 +564,25 @@ body {
 .settings-presets {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .preset-label {
-    font-size: 13px;
-    color: #888;
+    font-size: 12px;
+    color: #666;
     font-weight: 500;
 }
 
 .preset-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #aaa;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #999;
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: 11px;
     font-family: 'Inter', sans-serif;
     font-weight: 500;
     cursor: pointer;
@@ -300,52 +590,52 @@ body {
 }
 
 .preset-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
 .preset-btn.active {
-    background: rgba(0, 150, 255, 0.2);
-    border-color: #0096ff;
-    color: #0096ff;
+    background: rgba(229, 0, 0, 0.15);
+    border-color: #e50000;
+    color: #ff4444;
 }
 
 /* ── Key Binding Rows ── */
 .settings-bindings {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .binding-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
     transition: background 0.15s;
 }
 
 .binding-row:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .binding-label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    color: #ccc;
+    color: #bbb;
 }
 
 .key-btn {
-    min-width: 60px;
-    padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
+    min-width: 55px;
+    padding: 5px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
     color: #fff;
     font-family: 'Orbitron', monospace;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     text-align: center;
     cursor: pointer;
@@ -354,33 +644,33 @@ body {
 }
 
 .key-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .key-btn.listening {
-    background: rgba(255, 165, 0, 0.2);
-    border-color: #ffa500;
-    color: #ffa500;
+    background: rgba(229, 0, 0, 0.15);
+    border-color: #e50000;
+    color: #ff4444;
     animation: pulse-key 0.8s ease infinite alternate;
 }
 
 @keyframes pulse-key {
-    from { box-shadow: 0 0 4px rgba(255, 165, 0, 0.3); }
-    to { box-shadow: 0 0 16px rgba(255, 165, 0, 0.6); }
+    from { box-shadow: 0 0 4px rgba(229, 0, 0, 0.3); }
+    to { box-shadow: 0 0 16px rgba(229, 0, 0, 0.6); }
 }
 
 /* ── Settings Footer ── */
 .settings-footer {
-    margin-top: 20px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .settings-hint {
     margin: 0;
-    font-size: 12px;
-    color: #666;
+    font-size: 11px;
+    color: #555;
     text-align: center;
     font-style: italic;
 }
