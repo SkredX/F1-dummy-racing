@@ -542,6 +542,14 @@ export class Game {
         this.myCar.mesh.position.copy(this.vehicle.chassisBody.position);
         this.myCar.mesh.quaternion.copy(this.vehicle.chassisBody.quaternion);
 
+        // ── High-Frequency Vibration (Alive Feeling) ──
+        if (speedKmh > 10) {
+            // Intensity scales with speed
+            const intensity = (speedKmh / this.F1.topSpeedKmh) * 0.035; 
+            this.myCar.mesh.position.x += (Math.random() - 0.5) * intensity;
+            this.myCar.mesh.position.y += (Math.random() - 0.5) * intensity;
+        }
+
         for (let i = 0; i < this.vehicle.wheelInfos.length; i++) {
             this.vehicle.updateWheelTransform(i);
             const t = this.vehicle.wheelInfos[i].worldTransform;
@@ -563,7 +571,7 @@ export class Game {
         }
 
         // ── Camera follow ──
-        this._updateCamera();
+        this._updateCamera(speedKmh);
 
         // ── RPM calculation ──
         const rpm = this._calculateRPM(speedKmh);
@@ -593,7 +601,7 @@ export class Game {
         }
     }
 
-    _updateCamera() {
+    _updateCamera(speedKmh) { // Added speed parameter
         if (!this.myCar) return;
 
         const carPos = this.myCar.mesh.position;
@@ -602,24 +610,39 @@ export class Game {
         // Get car forward direction
         const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(carQuat);
 
-        // Camera offset behind and above the car
-        const camDistance = 8;
-        const camHeight = 3.0;
+        // ── Camera Offsets & Speed Warp ──
+        let camDistance = 8.0;
+        let targetFov = 70;
 
+        // When DRS is on and accelerating, the car "surges" forward and vision blurs
+        if (this.drsActive && this.inputState.throttle > 0.5) {
+            camDistance = 8.5; // Camera falls back slightly
+            targetFov = 95;    // High FOV stretches the edges like motion blur
+        } else if (speedKmh > 150) {
+            // Gradual FOV stretch for general high speeds
+            targetFov = 70 + (speedKmh - 150) * 0.15;
+        }
+
+        // Smoothly transition FOV
+        this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, targetFov, 0.1);
+        this.camera.updateProjectionMatrix();
+
+        const camHeight = 3.0;
         const idealPos = new THREE.Vector3(
             carPos.x - forward.x * camDistance,
             carPos.y + camHeight,
             carPos.z - forward.z * camDistance
         );
 
-        // Smooth camera follow
-        this.camera.position.lerp(idealPos, 0.06);
+        // ── Rigid Lock ──
+        // Increased lerp from 0.06 to 0.5 locks the car tightly in the center
+        this.camera.position.lerp(idealPos, 0.5);
 
         // Look at a point slightly ahead of the car
         const lookTarget = new THREE.Vector3(
-            carPos.x + forward.x * 5,
+            carPos.x + forward.x * 20,
             carPos.y + 1,
-            carPos.z + forward.z * 5
+            carPos.z + forward.z * 20
         );
         this.camera.lookAt(lookTarget);
     }
