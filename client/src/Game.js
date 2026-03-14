@@ -65,7 +65,7 @@ export class Game {
 
         // ── Physics constants — F1 tuning ──
         this.F1 = {
-            maxEngineForce: 8000,
+            maxEngineForce: 12000,
             maxBrakeForce: 5500,
             brakeBiasFront: 0.6,
             maxSteerLow: 0.55,
@@ -225,8 +225,8 @@ export class Game {
         let spawnX = 0, spawnZ = 0, spawnAngle = 0;
 
         if (pts && pts.length > 100) {
-            // Spawn EXACTLY at the start/finish line (index 0)
-            const idx = 0;
+            // Sample on the main straight, just after start/finish
+            const idx = Math.floor(pts.length * 0.02);
             const pt = pts[idx];
             const ptNext = pts[(idx + 1) % pts.length];
             spawnX = pt.x;
@@ -240,10 +240,10 @@ export class Game {
         console.log(`Car spawning at: x=${spawnX.toFixed(1)}, y=${spawnY}, z=${spawnZ.toFixed(1)}, angle=${spawnAngle.toFixed(3)} rad`);
 
         // ── Physics Chassis ──
-        const chassisShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.18, 1.2));
-        const chassisBody = new CANNON.Body({ mass: 798 });
+        const chassisShape = new CANNON.Box(new CANNON.Vec3(0.9, 0.25, 2.2));
+        const chassisBody = new CANNON.Body({ mass: 850 });
         chassisBody.addShape(chassisShape, new CANNON.Vec3(0, 0.1, 0));
-        chassisBody.position.set(spawnX, spawnY + 0.5, spawnZ);
+        chassisBody.position.set(spawnX, spawnY + 1.0, spawnZ); // Drop from slightly higher
         chassisBody.angularDamping = 0.6;
         chassisBody.linearDamping = 0.01;
         chassisBody.shapeOffsets[0].y = -0.05;
@@ -253,38 +253,38 @@ export class Game {
         this.scene.add(chassisMesh);
 
         // ── RaycastVehicle ──
+
         this.vehicle = new CANNON.RaycastVehicle({ chassisBody });
 
         const baseWheelOptions = {
             directionLocal: new CANNON.Vec3(0, -1, 0),
-            suspensionStiffness: 85,
+            suspensionStiffness: 110, // Stiffened to support the larger chassis
             suspensionRestLength: 0.25,
             dampingRelaxation: 3.0,
             dampingCompression: 5.5,
             maxSuspensionForce: 300000,
-            rollInfluence: 0.005,
+            rollInfluence: 0.01,
             axleLocal: new CANNON.Vec3(1, 0, 0),
             chassisConnectionPointLocal: new CANNON.Vec3(0, 0, 0),
-            maxSuspensionTravel: 0.1,
-            customSlidingRotationalSpeed: -30,
-            useCustomSlidingRotationalSpeed: true
+            maxSuspensionTravel: 0.3 // Increased so the floor doesn't scrape the track
+            // Note: Removed the customSlidingRotationalSpeed lines completely to fix traction loss
         };
 
-        // Front wheels
-        const frontOpts = { ...baseWheelOptions, radius: 0.33, frictionSlip: 5.5 };
-        frontOpts.chassisConnectionPointLocal = new CANNON.Vec3(0.75, -0.05, 1.6);
+        // Front wheels - Coordinates matched precisely to your friend's RB20 model
+        const frontOpts = { ...baseWheelOptions, radius: 0.33, frictionSlip: 8.0 };
+        frontOpts.chassisConnectionPointLocal = new CANNON.Vec3(1.1, -0.1, 1.5);
         this.vehicle.addWheel(frontOpts);
-        frontOpts.chassisConnectionPointLocal = new CANNON.Vec3(-0.75, -0.05, 1.6);
+        frontOpts.chassisConnectionPointLocal = new CANNON.Vec3(-1.1, -0.1, 1.5);
         this.vehicle.addWheel(frontOpts);
 
         // Rear wheels
-        const rearOpts = { ...baseWheelOptions, radius: 0.35, frictionSlip: 5.0 };
-        rearOpts.chassisConnectionPointLocal = new CANNON.Vec3(0.75, -0.05, -1.6);
+        const rearOpts = { ...baseWheelOptions, radius: 0.35, frictionSlip: 8.0 };
+        rearOpts.chassisConnectionPointLocal = new CANNON.Vec3(1.1, -0.1, -1.8);
         this.vehicle.addWheel(rearOpts);
-        rearOpts.chassisConnectionPointLocal = new CANNON.Vec3(-0.75, -0.05, -1.6);
+        rearOpts.chassisConnectionPointLocal = new CANNON.Vec3(-1.1, -0.1, -1.8);
         this.vehicle.addWheel(rearOpts);
-
         this.vehicle.addToWorld(this.world);
+        this.world.addBody(chassisBody);
 
         // Wheel Visuals
         const wheelVisuals = [];
