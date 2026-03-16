@@ -123,9 +123,9 @@ function createGravelTexture() {
  */
 export function getTrackSpline(trackData) {
     const points = trackData.path.map(p => new THREE.Vector3(p.x, p.y || 0, p.z));
-    // Manually close the loop to avoid getSpacedPoints bugs with closed=true
-    points.push(points[0].clone());
-    return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5);
+    // Use true to close the loop seamlessly natively in Three.js.
+    // Use 'centripetal' type to prevent self-intersecting loops and overshoots on tight F1 chicanes.
+    return new THREE.CatmullRomCurve3(points, true, 'centripetal', 0.5);
 }
 
 /**
@@ -152,7 +152,7 @@ export function buildTrack(trackData, world, groundMaterial) {
     });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
     groundMesh.rotation.x = -Math.PI / 2;
-    groundMesh.position.y = -0.05;
+    groundMesh.position.y = -0.5;
     groundMesh.receiveShadow = true;
     result.meshes.push(groundMesh);
 
@@ -495,58 +495,66 @@ function buildGrassStrips(points, width, numSamples) {
 function buildBarriers(points, width, numSamples, world, groundMaterial) {
     const result = { meshes: [], bodies: [] };
     const halfW = width / 2;
-    const barrierOffset = halfW + 1.5 + 8 + 6 + 1; // track + kerb + runoff + grass + gap
+    const barrierOffset = halfW + 10; // Distance from center
     const barrierHeight = 1.2;
+    const fenceHeight = 3.5; // Height of the FIA catch-fence
 
-    // Tire barrier on bottom, concrete on top
-    const concreteMat = new THREE.MeshStandardMaterial({
-        color: 0xb0b0b0,
-        roughness: 0.7,
-        metalness: 0.1
+    const concreteMat = new THREE.MeshStandardMaterial({ color: 0xb0b0b0, roughness: 0.8 });
+    
+    // Simulate chain-link fence with a dark, slightly transparent wireframe-like material
+    const fenceMat = new THREE.MeshStandardMaterial({ 
+        color: 0x222222, 
+        wireframe: true, 
+        transparent: true, 
+        opacity: 0.6,
+        side: THREE.DoubleSide
     });
 
-    const step = 6;
     for (const side of [-1, 1]) {
-        const barrierVerts = [];
-        const barrierNorms = [];
-        const barrierIdx = [];
+        const wallGeo = new THREE.BufferGeometry();
+        const fenceGeo = new THREE.BufferGeometry();
+        const wallVerts = [], fenceVerts = [], idx = [];
 
-        for (let i = 0; i <= numSamples; i += step) {
+        for (let i = 0; i <= numSamples; i++) {
             const curr = points[i % points.length];
-            const next = points[(i + step) % points.length];
+            const next = points[(i + 1) % points.length];
             const dir = new THREE.Vector3().subVectors(next, curr).normalize();
             const right = new THREE.Vector3(-dir.z, 0, dir.x).normalize();
 
             const pos = curr.clone().add(right.clone().multiplyScalar(side * barrierOffset));
 
-            barrierVerts.push(pos.x, 0, pos.z);
-            barrierVerts.push(pos.x, barrierHeight, pos.z);
+            // Wall Vertices
+            wallVerts.push(pos.x, curr.y, pos.z);
+            wallVerts.push(pos.x, curr.y + barrierHeight, pos.z);
 
-            const n = right.clone().multiplyScalar(-side);
-            barrierNorms.push(n.x, 0, n.z);
-            barrierNorms.push(n.x, 0, n.z);
+            // Fence Vertices (starts at top of wall)
+            fenceVerts.push(pos.x, curr.y + barrierHeight, pos.z);
+            fenceVerts.push(pos.x, curr.y + barrierHeight + fenceHeight, pos.z);
         }
 
-        const segCount = Math.floor(numSamples / step);
-        for (let i = 0; i < segCount; i++) {
+        for (let i = 0; i < numSamples; i++) {
             const a = i * 2, b = i * 2 + 1, c = i * 2 + 2, d = i * 2 + 3;
-            barrierIdx.push(a, c, b);
-            barrierIdx.push(b, c, d);
+            idx.push(a, c, b);
+            idx.push(b, c, d);
         }
 
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(barrierVerts, 3));
-        geo.setAttribute('normal', new THREE.Float32BufferAttribute(barrierNorms, 3));
-        geo.setIndex(barrierIdx);
-        geo.computeVertexNormals();
+        wallGeo.setAttribute('position', new THREE.Float32BufferAttribute(wallVerts, 3));
+        wallGeo.setIndex(idx);
+        fenceGeo.setAttribute('position', new THREE.Float32BufferAttribute(fenceVerts, 3));
+        fenceGeo.setIndex(idx);
 
-        const mesh = new THREE.Mesh(geo, concreteMat);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        result.meshes.push(mesh);
+        wallGeo.computeVertexNormals();
+        fenceGeo.computeVertexNormals();
 
-        // Physics bodies — segments along the barrier
-        const physStep = 25;
+        const wallMesh = new THREE.Mesh(wallGeo, concreteMat);
+        const fenceMesh = new THREE.Mesh(fenceGeo, fenceMat);
+        
+        wallMesh.castShadow = true; wallMesh.receiveShadow = true;
+        
+        result.meshes.push(wallMesh, fenceMesh);
+
+        // 2. Build Physics bodies (using slightly larger steps to save CPU, but they will overlap cleanly)
+        const physStep = 10; 
         for (let i = 0; i < numSamples; i += physStep) {
             const curr = points[i % points.length];
             const next = points[(i + physStep) % points.length];
@@ -566,7 +574,8 @@ function buildBarriers(points, width, numSamples, world, groundMaterial) {
 
             const angle = Math.atan2(dir.x, dir.z);
             body.quaternion.setFromEuler(0, angle, 0);
-            body.addShape(new CANNON.Box(new CANNON.Vec3(0.6, barrierHeight / 2, segLen / 2)));
+            // Overlap segments slightly (+0.5) to prevent physics snagging
+            body.addShape(new CANNON.Box(new CANNON.Vec3(0.6, barrierHeight / 2, (segLen / 2) + 0.5)));
 
             world.addBody(body);
             result.bodies.push(body);
@@ -703,55 +712,66 @@ function buildGrandstand(gs) {
 }
 
 // ══════════════════════════════════════════════
-// ── Environment Trees ──
+// ── Environment Trees (Corrected) ──
 // ══════════════════════════════════════════════
 function buildEnvironment(points, width) {
     const meshes = [];
-    const halfW = width / 2;
-    const treeOffset = halfW + 35;
+    const treeCount = 600;
+    const safeDistance = (width / 2) + 20; // Ensure trees do not spawn on asphalt or gravel
 
-    const trunkGeo = new THREE.CylinderGeometry(0.25, 0.4, 5, 6);
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4a2f15, roughness: 0.9 });
+    // Simple low-poly tree geometry
+    const trunkGeo = new THREE.CylinderGeometry(0.5, 0.7, 3, 5);
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e00 });
+    const leavesGeo = new THREE.ConeGeometry(3, 6, 5);
+    const leavesMat = new THREE.MeshStandardMaterial({ color: 0x1e4f16 });
 
-    // Multiple foliage types for variety
-    const foliageGeos = [
-        new THREE.SphereGeometry(2.5, 8, 6),
-        new THREE.ConeGeometry(2.2, 5, 7),
-        new THREE.SphereGeometry(3.0, 6, 5),
-    ];
-    const foliageColors = [0x2d7a2d, 0x247024, 0x358535, 0x1e6020];
+    let treesPlaced = 0;
+    let attempts = 0; // Prevent infinite loops during generation
 
-    const treeStep = 25;
-    for (let i = 0; i < points.length; i += treeStep) {
-        const curr = points[i];
-        const next = points[(i + 1) % points.length];
-        const dir = new THREE.Vector3().subVectors(next, curr).normalize();
-        const right = new THREE.Vector3(-dir.z, 0, dir.x).normalize();
+    while (treesPlaced < treeCount && attempts < 2000) {
+        attempts++;
+        
+        // Generate random position across the map
+        const x = (Math.random() - 0.5) * 800;
+        const z = (Math.random() - 0.5) * 800;
 
-        for (const side of [-1, 1]) {
-            const jitterX = (Math.random() - 0.5) * 12;
-            const jitterZ = (Math.random() - 0.5) * 12;
-            const offset = treeOffset + Math.random() * 25;
+        // Check distance to the closest track point
+        let isSafe = true;
+        // Step by 5 to save CPU during generation
+        for (let i = 0; i < points.length; i += 5) { 
+            const pt = points[i];
+            const dist = Math.hypot(pt.x - x, pt.z - z);
+            if (dist < safeDistance) {
+                isSafe = false;
+                break;
+            }
+        }
 
-            const pos = curr.clone().add(right.clone().multiplyScalar(side * offset));
-            pos.x += jitterX;
-            pos.z += jitterZ;
-
+        if (isSafe) {
+            // Build tree
+            const treeGroup = new THREE.Group();
+            
             const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-            trunk.position.set(pos.x, 2.5, pos.z);
+            trunk.position.y = 1.5; 
             trunk.castShadow = true;
-            meshes.push(trunk);
+            
+            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+            leaves.position.y = 4.5; 
+            leaves.castShadow = true;
 
-            const fType = Math.floor(Math.random() * foliageGeos.length);
-            const fColor = foliageColors[Math.floor(Math.random() * foliageColors.length)];
-            const foliageMat = new THREE.MeshStandardMaterial({ color: fColor, roughness: 0.85 });
-            const foliage = new THREE.Mesh(foliageGeos[fType], foliageMat);
-            foliage.position.set(pos.x, 6 + Math.random(), pos.z);
-            foliage.scale.set(1 + Math.random() * 0.3, 0.8 + Math.random() * 0.5, 1 + Math.random() * 0.3);
-            foliage.castShadow = true;
-            meshes.push(foliage);
+            treeGroup.add(trunk);
+            treeGroup.add(leaves);
+            
+            treeGroup.position.set(x, 0, z);
+            
+            // Randomize scale for variety
+            const scale = 0.8 + Math.random() * 0.6;
+            treeGroup.scale.set(scale, scale, scale);
+
+            meshes.push(treeGroup);
+            treesPlaced++;
         }
     }
-
+    
     return meshes;
 }

@@ -1,120 +1,113 @@
-/**
- * TrackData.js — Accurate Monza circuit layout with GPS-referenced control points.
- * Coordinates are in meters, scaled to approximate the real 5.793km layout.
- * Y values represent elevation changes.
- */
-
 export const TRACKS = {
     monza: {
         name: "Autodromo Nazionale Monza",
         length: 5793,
         trackWidth: 12,
-        // Start/finish line position
         startFinish: { x: 0, z: 0 },
-        // Starting grid position and direction
         startPosition: { x: -1, y: 0.6, z: -30 },
-        startRotation: 0, // radians, facing +Z along the main straight
+        startRotation: 0, 
 
-        // Sector boundary indices (index into path array)
         sectors: {
-            s1End: 18,  // End of sector 1 (after Lesmo 2)
-            s2End: 30,  // End of sector 2 (after Ascari)
+            s1End: 23, 
+            s2End: 36, 
         },
 
-        // Detailed path — Monza circuit control points (clockwise as driven)
-        // Each point: { x, z, y (elevation), w (optional width override) }
+        // Densely clustered points force realistic, sharp F1 corners
         path: [
             // ═══ Start/Finish Straight ═══
             { x: 0, z: 0, y: 0 },
-            { x: 0, z: 40, y: 0 },
-            { x: 0, z: 90, y: 0 },
-            { x: 0, z: 140, y: 0 },
+            { x: 0, z: 80, y: 0 },
+            { x: 0, z: 160, y: 0 },
+            { x: 0, z: 240, y: 0 },
 
             // ═══ Variante del Rettifilo (1st Chicane) ═══
-            { x: 8, z: 175, y: 0 },
-            { x: 18, z: 195, y: 0 },
-            { x: 12, z: 215, y: 0 },
-            { x: 0, z: 235, y: 0 },
-
-            // ═══ Run to Curva Grande ═══
-            { x: -5, z: 270, y: 0 },
-            { x: -8, z: 310, y: 0 },
+            { x: 0, z: 270, y: 0 },
+            { x: 12, z: 275, y: 0 }, // Right turn-in
+            { x: 15, z: 282, y: 0 }, // Right apex
+            { x: 6, z: 288, y: 0 },  // Left apex
+            { x: 0, z: 295, y: 0 },  // Exit
 
             // ═══ Curva Grande (long right-hander) ═══
-            { x: -5, z: 360, y: 0 },
-            { x: 15, z: 410, y: 0 },
-            { x: 50, z: 440, y: 0 },
-            { x: 90, z: 445, y: 0 },
+            { x: -8, z: 350, y: 0 },
+            { x: -5, z: 420, y: 0 },
+            { x: 15, z: 480, y: 0 },
+            { x: 45, z: 530, y: 0 },
+            { x: 85, z: 560, y: 0 },
+            { x: 130, z: 575, y: 0 },
 
             // ═══ Variante della Roggia (2nd Chicane) ═══
-            { x: 120, z: 435, y: 0 },
-            { x: 135, z: 415, y: 0 },
-            { x: 128, z: 395, y: 0 },
-            { x: 115, z: 378, y: 0 },
+            { x: 160, z: 578, y: 0 },
+            { x: 175, z: 575, y: 0 }, // Braking
+            { x: 182, z: 565, y: 0 }, // Left turn-in
+            { x: 178, z: 555, y: 0 }, // Right apex
+            { x: 172, z: 545, y: 0 }, // Exit
 
             // ═══ Lesmo 1 ═══
-            { x: 110, z: 345, y: 0.5 },
-            { x: 115, z: 310, y: 1 },
-            { x: 130, z: 280, y: 1.5 },
+            { x: 165, z: 500, y: 0.5 },
+            { x: 162, z: 470, y: 1 },
+            { x: 175, z: 450, y: 1.5 },
+            { x: 190, z: 440, y: 1.5 },
 
             // ═══ Lesmo 2 ═══
-            { x: 148, z: 255, y: 1.5 },
-            { x: 160, z: 230, y: 1 },
-            { x: 165, z: 200, y: 0.5 },
+            { x: 210, z: 420, y: 1.5 },
+            { x: 220, z: 395, y: 1 },
+            { x: 215, z: 370, y: 0.5 },
+            { x: 200, z: 345, y: 0 },
 
             // ═══ Run down to Variante Ascari ═══
-            { x: 162, z: 160, y: 0 },
-            { x: 155, z: 120, y: -0.5 },
+            { x: 185, z: 290, y: -0.5 },
+            { x: 170, z: 230, y: -0.5 },
+            { x: 155, z: 170, y: -0.5 },
 
             // ═══ Variante Ascari ═══
-            { x: 140, z: 90, y: -0.5 },
-            { x: 120, z: 72, y: -0.5 },
-            { x: 108, z: 58, y: -0.5 },
-            { x: 105, z: 40, y: 0 },
-            { x: 115, z: 20, y: 0 },
+            { x: 145, z: 130, y: -0.5 }, // Braking
+            { x: 132, z: 115, y: -0.5 }, // Left
+            { x: 138, z: 105, y: 0 },    // Right
+            { x: 125, z: 92, y: 0 },     // Left
+            { x: 115, z: 80, y: 0 },     // Exit
 
             // ═══ Straight before Parabolica ═══
-            { x: 118, z: -10, y: 0 },
-            { x: 115, z: -50, y: 0 },
-            { x: 110, z: -90, y: 0 },
+            { x: 115, z: 30, y: 0 },
+            { x: 115, z: -30, y: 0 },
+            { x: 115, z: -90, y: 0 },
 
             // ═══ Curva Parabolica (Curva Alboreto) ═══
-            { x: 100, z: -125, y: 0 },
-            { x: 82, z: -150, y: 0 },
-            { x: 60, z: -165, y: 0 },
-            { x: 35, z: -170, y: 0 },
-            { x: 10, z: -165, y: 0 },
+            { x: 115, z: -140, y: 0 },
+            { x: 110, z: -175, y: 0 },
+            { x: 90, z: -205, y: 0 },
+            { x: 60, z: -220, y: 0 },
+            { x: 25, z: -215, y: 0 },
+            { x: 5, z: -190, y: 0 },
 
             // ═══ Main Straight (back to start/finish) ═══
-            { x: -5, z: -140, y: 0 },
-            { x: -5, z: -100, y: 0 },
-            { x: -3, z: -60, y: 0 },
-            { x: -1, z: -30, y: 0 },
+            { x: 0, z: -140, y: 0 },
+            { x: 0, z: -70, y: 0 },
         ],
 
-        // Corner names for the mini-map labels
         corners: [
             { name: "Rettifilo", pathIndex: 5 },
-            { name: "Curva Grande", pathIndex: 11 },
-            { name: "Roggia", pathIndex: 15 },
-            { name: "Lesmo 1", pathIndex: 18 },
-            { name: "Lesmo 2", pathIndex: 22 },
-            { name: "Ascari", pathIndex: 27 },
-            { name: "Parabolica", pathIndex: 35 },
+            { name: "Curva Grande", pathIndex: 12 },
+            { name: "Roggia", pathIndex: 17 },
+            { name: "Lesmo 1", pathIndex: 22 },
+            { name: "Lesmo 2", pathIndex: 26 },
+            { name: "Ascari", pathIndex: 32 },
+            { name: "Parabolica", pathIndex: 40 },
         ],
 
-        // DRS zones (indices into path)
         drsZones: [
-            { start: 0, end: 3 },      // Main straight
-            { start: 7, end: 9 },       // After chicane 1
+            { start: 0, end: 4 },       // Main straight
+            { start: 26, end: 30 },     // Straight after Lesmo 2
         ],
 
-        // Grandstand locations (for environment)
         grandstands: [
-            { x: 20, z: 50, rotation: Math.PI / 2, length: 80 },
-            { x: -20, z: 50, rotation: -Math.PI / 2, length: 80 },
-            { x: 20, z: 195, rotation: 0, length: 40 },
-            { x: 100, z: -170, rotation: 0, length: 50 },
+            // Main Straight Right
+            { x: 25, z: 120, rotation: Math.PI / 2, length: 120 },
+            // Main Straight Left
+            { x: -25, z: 120, rotation: -Math.PI / 2, length: 120 },
+            // Rettifilo Chicane Viewing
+            { x: 35, z: 275, rotation: Math.PI / 2.5, length: 60 },
+            // Parabolica Outside
+            { x: 140, z: -175, rotation: Math.PI / 4, length: 70 },
         ],
     }
 };
